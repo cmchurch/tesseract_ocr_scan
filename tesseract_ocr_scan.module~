@@ -23,10 +23,10 @@ function tesseract_ocr_scan_start_scan($node) {
 	
 	$filepath = drupal_realpath($file->uri);
 	print $filepath;
-	flush();
+	ob_flush();
 	$temp_path = tesseract_ocr_scan_convert_pdf($filepath);
 	$scan = tesseract_ocr_scan_scan($temp_path);
-	print "SCAN<br/><br/><pre>".$scan."</pre>";	
+	print "<br/><br/>SCAN<br/>***********<br/><pre>".$scan."</pre>";	
 	print "<br/><br/>Done!";
 
 }
@@ -58,4 +58,18 @@ function tesseract_ocr_scan_scan($temp_path) {
 	return $scan;
 }
 
+function tesseract_ocr_scan_go_batch() {
+	 $batch = array(
+	    'operations' => array(),
+	    'finished' => 'tesseract_ocr_scan_batch_finished', // runs after batch is finished
+	    'title' => t('Processing Import'),
+	    'init_message' => t('Import is starting.'),
+	    'progress_message' => t('Processed @current out of @total.'),
+	    'error_message' => t('Import has encountered an error.'),
+ 	 );
+}
+
+function tesseract_ocr_scan_batch_finished() {
+drupal_set_message("Done!");
+}
 ?>

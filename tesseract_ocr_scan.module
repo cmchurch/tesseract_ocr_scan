@@ -26,7 +26,7 @@ function tesseract_ocr_scan_start_scan($node) {
 	ob_flush();
 	$temp_path = tesseract_ocr_scan_convert_pdf($filepath);
 	$scan = tesseract_ocr_scan_scan($temp_path);
-	print "SCAN<br/><br/><pre>".$scan."</pre>";	
+	print "<br/><br/>SCAN<br/>***********<br/><pre>".$scan."</pre>";	
 	print "<br/><br/>Done!";
 
 }
@@ -57,5 +57,6 @@ function tesseract_ocr_scan_scan($temp_path) {
 	shell_exec($remove_temp);
 	return $scan;
 }
+
 
 ?>
