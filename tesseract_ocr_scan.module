@@ -1,0 +1,61 @@
+<?php
+function tesseract_ocr_scan_menu() {
+/*THIS FUNCTION HOOKS INTO drupal_menu TO ADD A TAB THAT DEFINES THE start_scan FUNCTION*/
+	$items['node/%node/tesseract_ocr_scan'] = array(
+	    'title' => 'Scan',
+	    'access arguments' => array('access content'),
+	    'page callback' => 'tesseract_ocr_scan_start_scan',
+	    'page arguments' => array(1),
+	    'type' => MENU_LOCAL_TASK,
+	  );
+	 return $items;
+}
+
+function tesseract_ocr_scan_start_scan($node) {
+	//shell_exec('touch /home/cmchurch/ididit.txt');
+
+	// drupal_set_message('You pressed scan on the node ' .$node->nid,'error');
+
+	$file = file_load($node->field_file['und'][0]['fid']);
+	print 'Filename: ';
+	print $file->filename;
+	print '<br/><br/>FILE PATH: ';
+	
+	$filepath = drupal_realpath($file->uri);
+	print $filepath;
+	ob_flush();
+	$temp_path = tesseract_ocr_scan_convert_pdf($filepath);
+	$scan = tesseract_ocr_scan_scan($temp_path);
+	print "SCAN<br/><br/><pre>".$scan."</pre>";	
+	print "<br/><br/>Done!";
+
+}
+
+
+function tesseract_ocr_scan_convert_pdf($filepath) {
+	$convert_path = file_directory_temp() . "/tesseract_ocr_drupal/";
+	if (!file_exists($convert_path)) {
+	    mkdir($convert_path, 0777, true);
+	}
+	$im = new imagick();
+	$im->setResolution(400,400);
+	$im->readimage($filepath); 
+	$im->setImageFormat('jpg');
+	//$im->setImageAlphaChannel(Imagick::ALPHACHANNEL_OPAQUE);
+	foreach($im as $i=>$image)	{
+		$im->writeImage($convert_path."page".$i.".jpg"); 
+	}
+	$im->clear(); 
+	$im->destroy();
+	return $convert_path;
+}
+
+function tesseract_ocr_scan_scan($temp_path) {
+	$command = "for i in ".$temp_path."*.jpg ; do cat \$i | tesseract stdin stdout; done;";
+	$scan = shell_exec($command);
+	$remove_temp = "rm -r ".$temp_path;
+	shell_exec($remove_temp);
+	return $scan;
+}
+
+?>
