@@ -12,22 +12,16 @@ function tesseract_ocr_scan_menu() {
 }
 
 function tesseract_ocr_scan_start_scan($node) {
-	//shell_exec('touch /home/cmchurch/ididit.txt');
-
-	// drupal_set_message('You pressed scan on the node ' .$node->nid,'error');
-
 	$file = file_load($node->field_file['und'][0]['fid']);
-	print 'Filename: ';
-	print $file->filename;
-	print '<br/><br/>FILE PATH: ';
-	
 	$filepath = drupal_realpath($file->uri);
-	print $filepath;
-	ob_flush();
 	$temp_path = tesseract_ocr_scan_convert_pdf($filepath);
 	$scan = tesseract_ocr_scan_scan($temp_path);
-	print "<br/><br/>SCAN<br/>***********<br/><pre>".$scan."</pre>";	
-	print "<br/><br/>Done!";
+	//$scan = preg_replace("/\n(?=\w)/",' ',$scan);
+	//$scan = preg_replace("/-\s(?=\w)/",'',$scan);
+	
+	$node->field_ocr_text[$node->language][0]['value']= $scan;
+	field_attach_update('node', $node);
+	drupal_goto('node/'.$node->nid);
 
 }
 
@@ -58,18 +52,30 @@ function tesseract_ocr_scan_scan($temp_path) {
 	return $scan;
 }
 
-function tesseract_ocr_scan_go_batch() {
+
+
+/*NOT USED*/
+
+function tesseract_ocr_scan_go_batch($node) {
 	 $batch = array(
-	    'operations' => array(),
+	    'operations' => array('tesseract_ocr_scan_test', array('node'=> $node)),
 	    'finished' => 'tesseract_ocr_scan_batch_finished', // runs after batch is finished
-	    'title' => t('Processing Import'),
-	    'init_message' => t('Import is starting.'),
-	    'progress_message' => t('Processed @current out of @total.'),
+	    'title' => t('Scanning............'),
+	    'init_message' => t('Scan is starting.'),
 	    'error_message' => t('Import has encountered an error.'),
  	 );
+	batch_set($batch);
+	batch_process('node/'.$node->nid);
 }
 
-function tesseract_ocr_scan_batch_finished() {
-drupal_set_message("Done!");
+function tesseract_ocr_scan_batch_finished($success,$results,$operations) {
+drupal_set_message($results);
+}
+
+function _tesseract_ocr_scan_test($node) {
+	$file = file_load($node->field_file['und'][0]['fid']);
+	$filepath = drupal_realpath($file->uri);
+	$context['message'] = t('Processing image %filepath', array('%filepath' => $filepath));
+
 }
 ?>
