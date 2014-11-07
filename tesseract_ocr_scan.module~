@@ -16,8 +16,11 @@ function tesseract_ocr_scan_start_scan($node) {
 	$filepath = drupal_realpath($file->uri);
 	$temp_path = tesseract_ocr_scan_convert_pdf($filepath);
 	$scan = tesseract_ocr_scan_scan($temp_path);
-	//$scan = preg_replace("/\n(?=\w)/",' ',$scan);
-	//$scan = preg_replace("/-\s(?=\w)/",'',$scan);
+	
+	//REMOVE ALL UNNECESSARY LINE BREAKS (Newlines followed by alphanumeric characters)	
+	$scan = preg_replace("/\n(?=\w)/",' ',$scan);
+	//REMOVE UNNECESSARY HYPHENATION (hyphens followed by spaces)
+	$scan = preg_replace("/-\s(?=\w)/",'',$scan);
 	
 	$node->field_ocr_text[$node->language][0]['value']= $scan;
 	field_attach_update('node', $node);
@@ -45,10 +48,11 @@ function tesseract_ocr_scan_convert_pdf($filepath) {
 }
 
 function tesseract_ocr_scan_scan($temp_path) {
-	$command = "for i in ".$temp_path."*.jpg ; do cat \$i | tesseract stdin stdout; done;";
+	$command = "for i in ".$temp_path."*.jpg ; do tesseract \$i \$i; done;";
+	$command = $command."for i in ".$temp_path."*.txt; do cat \$i;done;";
 	$scan = shell_exec($command);
 	$remove_temp = "rm -r ".$temp_path;
-	shell_exec($remove_temp);
+	//shell_exec($remove_temp);
 	return $scan;
 }
 

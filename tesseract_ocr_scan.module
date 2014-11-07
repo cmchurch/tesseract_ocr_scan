@@ -48,10 +48,12 @@ function tesseract_ocr_scan_convert_pdf($filepath) {
 }
 
 function tesseract_ocr_scan_scan($temp_path) {
-	$command = "for i in ".$temp_path."*.jpg ; do cat \$i | tesseract stdin stdout; done;";
-	$scan = shell_exec($command);
+	$command_scan = "for i in ".$temp_path."*.jpg ; do tesseract \$i \$i; done;";
+	$command_getresults = "for i in ".$temp_path."*.txt; do cat \$i;done;";
+	shell_exec($command_scan);
+	$scan = shell_exec($command_getresults);
 	$remove_temp = "rm -r ".$temp_path;
-	shell_exec($remove_temp);
+	//shell_exec($remove_temp);
 	return $scan;
 }
 
