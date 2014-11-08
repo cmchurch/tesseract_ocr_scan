@@ -25,8 +25,8 @@ function tesseract_ocr_scan_go_batch($node) {
 	    'finished' => 'tesseract_ocr_scan_batch_finished',
 	    'title' => t('Scanning............'),
 	    'init_message' => t('Scan is starting.'),
-	    'progress_message' => t('Opertation @current out of @total.'),
-	    'error_message' => t('Import has encountered an error.'),
+	    'progress_message' => t('Operation @current out of @total.'),
+	    'error_message' => t('OCR Scan has encountered an error.'),
  	 );
 	batch_set($batch);
 	batch_process('node/'.$node->nid);

@@ -11,6 +11,28 @@ function tesseract_ocr_scan_menu() {
 	 return $items;
 }
 
+
+
+function tesseract_ocr_scan_go_batch($node) {
+	 $batch = array(
+	    'operations' => array(
+				array('tesseract_ocr_scan_get_filepath', array($node)),
+				array('tesseract_ocr_scan_convert_pdf',array()),
+				array('tesseract_ocr_scan_scan',array()),
+				array('tesseract_ocr_scan_regex_clean',array()),
+				array('tesseract_ocr_scan_update_node',array())
+			     ),
+	    'finished' => 'tesseract_ocr_scan_batch_finished',
+	    'title' => t('Scanning............'),
+	    'init_message' => t('Scan is starting.'),
+	    'progress_message' => t('Opertation @current out of @total.'),
+	    'error_message' => t('Import has encountered an error.'),
+ 	 );
+	batch_set($batch);
+	batch_process('node/'.$node->nid);
+}
+
+
 function tesseract_ocr_scan_get_filepath($node,&$context) {
 	$context['message'] = "File Loaded";
 	$context['sandbox']['progress']=0;
@@ -23,29 +45,6 @@ function tesseract_ocr_scan_get_filepath($node,&$context) {
 	$context['sandbox']['progress']++;
 	sleep(1);
 }
-
-
-	
-	
-function tesseract_ocr_scan_regex_clean(&$context) {	
-	$scan = $context['results']['scan'];
-	//REMOVE ALL UNNECESSARY LINE BREAKS (Newlines followed by alphanumeric characters)	
-	$scan = preg_replace("/\n(?=\w)/",' ',$scan);
-	//REMOVE UNNECESSARY HYPHENATION (hyphens followed by spaces)
-	$scan = preg_replace("/-\s(?=\w)/",'',$scan);
-	$context['results']['scan'] = $scan;
-	$context['message']='Regex cleaning complete';
-	sleep(1);
-}
-
-function tesseract_ocr_scan_update_node(&$context) {
-	$scan = $context['results']['scan'];
-	$node = $context['results']['node'];
-	$node->field_ocr_text[$node->language][0]['value']= $scan;
-	field_attach_update('node', $node);
-
-}
-
 
 function tesseract_ocr_scan_convert_pdf(&$context) {
 	$filepath = $context['results']['filepath'];
@@ -87,50 +86,28 @@ function tesseract_ocr_scan_scan(&$context) {
 }
 
 
-
-/*NOT USED*/
-
-function tesseract_ocr_scan_go_batch($node) {
-	 $batch = array(
-	    'operations' => array(
-				array('tesseract_ocr_scan_get_filepath', array($node)),
-				array('tesseract_ocr_scan_convert_pdf',array()),
-				array('tesseract_ocr_scan_scan',array()),
-				array('tesseract_ocr_scan_regex_clean',array()),
-				array('tesseract_ocr_scan_update_node',array())
-			     ),
-	    'finished' => 'tesseract_ocr_scan_batch_finished',
-	    'title' => t('Scanning............'),
-	    'init_message' => t('Scan is starting.'),
-	    'progress_message' => t('Opertation @current out of @total.'),
-	    'error_message' => t('Import has encountered an error.'),
- 	 );
-	batch_set($batch);
-	batch_process('node/'.$node->nid);
+function tesseract_ocr_scan_regex_clean(&$context) {	
+	$scan = $context['results']['scan'];
+	//REMOVE ALL UNNECESSARY LINE BREAKS (Newlines followed by alphanumeric characters)	
+	$scan = preg_replace("/\n(?=\w)/",' ',$scan);
+	//REMOVE UNNECESSARY HYPHENATION (hyphens followed by spaces)
+	$scan = preg_replace("/-\s(?=\w)/",'',$scan);
+	$context['results']['scan'] = $scan;
+	$context['message']='Regex cleaning complete';
+	sleep(1);
 }
+
+function tesseract_ocr_scan_update_node(&$context) {
+	$scan = $context['results']['scan'];
+	$node = $context['results']['node'];
+	$node->field_ocr_text[$node->language][0]['value']= $scan;
+	field_attach_update('node', $node);
+
+}
+
 
 function tesseract_ocr_scan_batch_finished($success,$results,$operations) {
 drupal_set_message("The OCR operation hs completed; ocr_text field updated");
 }
 
-function tesseract_ocr_scan_test(&$context) {
-	//$file = file_load($node->field_file['und'][0]['fid']);
-	//$filepath = drupal_realpath($file->uri);
-	//$context['message'] = t('Processing image %filepath', array('%filepath' => $filepath));
-	/*
-	if (!isset($context['sandbox']['progress'])) {
-   		$context['sandbox']['progress'] = 0;
-		$context['sandbox']['max'] = 5;	
-	}
-
-	$context['sandbox']['progress']++;
-	tesseract_ocr_scan_start_scan($node);
-	
-	if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
-   		 $context['finished'] = $context['sandbox']['progress'] / $context['sandbox']['max'];
-  	}*/
-	sleep(2);
-	$context['message']='xxx';
-	$context['sandbox']['progress']++;
-}
 ?>
