@@ -80,7 +80,7 @@ function tesseract_ocr_scan_scan(&$context) {
 	shell_exec($command_scan);
 	$scan = shell_exec($command_getresults);
 	$remove_temp = "rm -r ".$temp_path;
-	//shell_exec($remove_temp);
+	shell_exec($remove_temp);
 	$context['results']['scan']=$scan;
 	$context['message']="OCR complete";
 	sleep(1);
