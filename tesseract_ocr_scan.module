@@ -41,9 +41,7 @@ function tesseract_ocr_scan_get_filepath($node,&$context) {
 	$filepath = drupal_realpath($file->uri);
 	$context['results']['filepath'] = $filepath;
 	$context['results']['node']=$node;
-	//$context['results']['node'] = $node;
 	$context['sandbox']['progress']++;
-	sleep(1);
 }
 
 function tesseract_ocr_scan_convert_pdf(&$context) {
@@ -69,7 +67,6 @@ function tesseract_ocr_scan_convert_pdf(&$context) {
 	$im->destroy();
 
 	$context['message'] = "PDF converted - note: OCR may take several minutes to complete.";
-	sleep(1);
 }
 
 function tesseract_ocr_scan_scan(&$context) {
@@ -97,8 +94,6 @@ function tesseract_ocr_scan_scan(&$context) {
 	if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
 	    $context['finished'] = $context['sandbox']['progress'] / $context['sandbox']['max'];
 	}
-	sleep(1);
-	
 }
 
 
@@ -110,7 +105,6 @@ function tesseract_ocr_scan_regex_clean(&$context) {
 	$scan = preg_replace("/-\s(?=\w)/",'',$scan);
 	$context['results']['scan'] = $scan;
 	$context['message']='Regex cleaning complete';
-	sleep(1);
 }
 
 function tesseract_ocr_scan_update_node(&$context) {

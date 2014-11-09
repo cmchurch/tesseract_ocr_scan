@@ -43,7 +43,7 @@ function tesseract_ocr_scan_get_filepath($node,&$context) {
 	$context['results']['node']=$node;
 	//$context['results']['node'] = $node;
 	$context['sandbox']['progress']++;
-	sleep(1);
+	//sleep(1);
 }
 
 function tesseract_ocr_scan_convert_pdf(&$context) {
@@ -69,7 +69,7 @@ function tesseract_ocr_scan_convert_pdf(&$context) {
 	$im->destroy();
 
 	$context['message'] = "PDF converted - note: OCR may take several minutes to complete.";
-	sleep(1);
+	//sleep(1);
 }
 
 function tesseract_ocr_scan_scan(&$context) {
@@ -86,29 +86,18 @@ function tesseract_ocr_scan_scan(&$context) {
 	
 	$x = $context['sandbox']['progress'];
 	$file = $files[$x];
-	$context['message']=$file;
+	$context['message']=$file." scanned.";
 	$cmd_scan = "tesseract ".$file." ".$file;
 	shell_exec($cmd_scan);
 	$cmd_read="cat ".$file.".txt";
 	$scan=shell_exec($cmd_read);
-	$context['message']=$scan;
 	$context['results']['scan'].=$scan;
-	/*$command_scan = "for i in ".$temp_path."*.jpg ; do tesseract \$i \$i; done;";
-	$command_getresults = "for i in ".$temp_path."*.txt; do cat \$i;done;";
-	shell_exec($command_scan);
-	$scan = shell_exec($command_getresults);
-	$remove_temp = "rm -r ".$temp_path;
-	shell_exec($remove_temp);
-	$context['results']['scan']=$scan;
-	$context['message']="OCR complete";
-	sleep(1);
-	*/
 	
 	$context['sandbox']['progress']++;
 	if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
 	    $context['finished'] = $context['sandbox']['progress'] / $context['sandbox']['max'];
 	}
-	sleep(1);
+	//sleep(1);
 	
 }
 
@@ -121,7 +110,7 @@ function tesseract_ocr_scan_regex_clean(&$context) {
 	$scan = preg_replace("/-\s(?=\w)/",'',$scan);
 	$context['results']['scan'] = $scan;
 	$context['message']='Regex cleaning complete';
-	sleep(1);
+	//sleep(1);
 }
 
 function tesseract_ocr_scan_update_node(&$context) {
