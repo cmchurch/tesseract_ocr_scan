@@ -74,15 +74,31 @@ function tesseract_ocr_scan_convert_pdf(&$context) {
 
 function tesseract_ocr_scan_scan(&$context) {
 	$temp_path = $context['results']['temppath'];
-	$command_scan = "for i in ".$temp_path."*.jpg ; do tesseract \$i \$i; done;";
-	$command_getresults = "for i in ".$temp_path."*.txt; do cat \$i;done;";
-	shell_exec($command_scan);
-	$scan = shell_exec($command_getresults);
-	$remove_temp = "rm -r ".$temp_path;
-	shell_exec($remove_temp);
-	$context['results']['scan']=$scan;
-	$context['message']="OCR complete";
+	if (!isset($context['sandbox']['files'])) {
+		$files = glob($temp_path.'*.jpg');
+		$context['sandbox']['files']=$files;
+		$context['sandbox']['progress'] = 0;
+		$context['sandbox']['max']=count($files);
+	}
+	else {
+	$files = $context['sandbox']['files'];
+	}
+	
+	$x = $context['sandbox']['progress'];
+	$file = $files[$x];
+	$context['message']=$file." scanned.";
+	$cmd_scan = "tesseract ".$file." ".$file;
+	shell_exec($cmd_scan);
+	$cmd_read="cat ".$file.".txt";
+	$scan=shell_exec($cmd_read);
+	$context['results']['scan'].=$scan;
+	
+	$context['sandbox']['progress']++;
+	if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
+	    $context['finished'] = $context['sandbox']['progress'] / $context['sandbox']['max'];
+	}
 	sleep(1);
+	
 }
 
 
