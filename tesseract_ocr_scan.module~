@@ -91,9 +91,15 @@ function tesseract_ocr_scan_scan(&$context) {
 	$context['results']['scan'].=$scan;
 	
 	$context['sandbox']['progress']++;
+
 	if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
 	    $context['finished'] = $context['sandbox']['progress'] / $context['sandbox']['max'];
 	}
+	else
+	{
+		shell_exec("rm -r ".$temp_path);
+	}
+
 }
 
 
