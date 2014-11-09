@@ -110,6 +110,7 @@ function tesseract_ocr_scan_scan(&$context) {
 	{
 		shell_exec("rm -r ".$temp_path); // if we are all done, remove the temp folder
 	}
+	sleep(1);
 
 }
 
