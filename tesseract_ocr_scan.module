@@ -121,6 +121,9 @@ function tesseract_ocr_scan_regex_clean(&$context) {
 	//REMOVE ALL UNNECESSARY LINE BREAKS (Newlines followed by alphanumeric characters)	
 	$scan = preg_replace("/\n(?=\w)/",' ',$scan);
 
+	//TURN MULTIPLE NEWLINES TO SINGLE
+	$scan = preg_replace('/(\r\n|\r|\n)+/', "\n", $scan);
+
 	//REMOVE UNNECESSARY HYPHENATION (hyphens followed by spaces)
 	$scan = preg_replace("/-\s(?=\w)/",'',$scan);
 
