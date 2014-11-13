@@ -147,4 +147,10 @@ function tesseract_ocr_scan_batch_finished($success,$results,$operations) {
 	drupal_set_message("The OCR operation was successful. Scan results added to the field <i>ocr_text</i>");
 }
 
+function tesseract_ocr_scan_form_alter(&$form, &$form_state, $form_id) {
+/*MAKE THE OCR_TEXT FIELD READ ONLY, SO USERS DON'T INPUT INFORMATION*/
+	if($form_id == "news_article_node_form") {
+		$form['field_ocr_text']['und']['0']['value']['#attributes']['disabled'] = TRUE;
+	}
+}
 ?>
