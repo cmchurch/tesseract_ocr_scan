@@ -3,7 +3,8 @@ function tesseract_ocr_scan_menu() {
 /*THIS FUNCTION HOOKS INTO drupal_menu TO ADD A TAB THAT DEFINES THE go_batch FUNCTION*/
 	$items['node/%node/tesseract_ocr_scan'] = array(
 	    'title' => 'Scan',
-	    'access arguments' => array('access content'),
+	    'access_callback' => 'tesseract_ocr_scan_access',
+	    'access arguments' => array(1),
 	    'page callback' => 'tesseract_ocr_scan_go_batch',
 	    'page arguments' => array(1),
 	    'type' => MENU_LOCAL_TASK,
@@ -11,7 +12,10 @@ function tesseract_ocr_scan_menu() {
 	 return $items;
 }
 
-
+function tesseract_ocr_scan_access($node) {
+  //return $node->type == 'news_article';
+ return FALSE;
+}
 
 function tesseract_ocr_scan_go_batch($node) {
 /*begins the batch job; each operation will loop until finished, 
@@ -152,5 +156,5 @@ function tesseract_ocr_scan_form_alter(&$form, &$form_state, $form_id) {
 	if($form_id == "news_article_node_form") {
 		$form['field_ocr_text']['und']['0']['value']['#attributes']['disabled'] = TRUE;
 	}
-
+}
 ?>
